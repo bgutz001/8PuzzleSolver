@@ -1,0 +1,13 @@
+
+class Node {
+ private:
+  Node* parent;
+  Node* child[];
+  int cost;
+
+ public:
+  Node();
+  void set_cost(int c);
+  int get_cost();
+  
+};
