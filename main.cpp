@@ -5,11 +5,18 @@
 
 using namespace std;
 
-bool checkRepeated(vector<Node>& exploredSet, priority_queue<Node, vector<Node>>& frontier,
+bool checkRepeated(vector<Node>& exploredSet,
+		   priority_queue<Node, vector<Node>, greater<Node>>& frontier,
 		   Node& expandNode) {
   // Check if expanded node is in the explored set
   for (int i = 0; i < exploredSet.size(); ++i) {
     if (expandNode == exploredSet.at(i)) {
+      /*
+      cout << endl << "Node is repeated" << endl;
+      expandNode.print();
+      exploredSet.at(i).print();
+      cout << endl;
+      */
       return false;
     }
   }
@@ -19,9 +26,8 @@ bool checkRepeated(vector<Node>& exploredSet, priority_queue<Node, vector<Node>>
 }
 
 bool run(Node& goalNode, Node& root) {
-  
   // Initalize the frontier using the inital state of the problem
-  priority_queue<Node, vector<Node>> frontier;
+  priority_queue<Node, vector<Node>, greater<Node>> frontier;
   frontier.push(root);
   // Initalize the explored set to be empty
   vector<Node> exploredSet;
@@ -31,6 +37,11 @@ bool run(Node& goalNode, Node& root) {
     if (frontier.empty()) return false;
     // Choose a leaf node and remove it from the frontier
     Node selectedNode = frontier.top();
+    frontier.pop();
+    cout << "The best node to expand:\n";
+    selectedNode.print();
+    cout << endl;
+    
     // If node contains a goal state then return the corresponding solution
     if (selectedNode == goalNode) return true;
     // Add the node to the explored set
@@ -39,28 +50,28 @@ bool run(Node& goalNode, Node& root) {
     // Only if they are not already in the frontier or the explored set
     Node expandNode;
     if (selectedNode.move_blank_up(expandNode)) {
-      if (!checkRepeated(exploredSet, frontier, expandNode)) {
+      if (checkRepeated(exploredSet, frontier, expandNode)) {
 	// Add the expanded node to the frontier
 	frontier.push(expandNode);
       }
     }
 
     if (selectedNode.move_blank_right(expandNode)) {
-      if (!checkRepeated(exploredSet, frontier, expandNode)) {
+      if (checkRepeated(exploredSet, frontier, expandNode)) {
 	// Add the expanded node to the frontier
 	frontier.push(expandNode);
       }
     }
 
     if (selectedNode.move_blank_down(expandNode)) {
-      if (!checkRepeated(exploredSet, frontier, expandNode)) {
+      if (checkRepeated(exploredSet, frontier, expandNode)) {	
 	// Add the expanded node to the frontier
 	frontier.push(expandNode);
       }
     }
      
     if (selectedNode.move_blank_left(expandNode)) {
-      if (!checkRepeated(exploredSet, frontier, expandNode)) {
+      if (checkRepeated(exploredSet, frontier, expandNode)) {
 	// Add the expanded node to the frontier
 	frontier.push(expandNode);
       }
@@ -78,6 +89,9 @@ int main() {
   root.set_state(initialState);
   goalNode.set_state(goalState);
 
+  if (!run(goalNode, root)) {
+    cout << "Failed to find a solution!" << endl;
+  }
  
   
   return 0;

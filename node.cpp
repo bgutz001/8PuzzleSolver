@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <utility>
+#include <iostream>
 #include "node.h"
 
 using namespace std;
@@ -29,11 +30,19 @@ short* Node::get_state() {
 }
 
 bool Node::operator<(const Node& rhs) const {
-  if (this->cost <= rhs.cost) {
+  if (this->cost < rhs.cost) {
     return true;
   }
   return false;
 }
+
+bool Node::operator>(const Node& rhs) const {
+  if (this->cost > rhs.cost) {
+    return true;
+  }
+  return false;
+}
+
 
 bool Node::operator==(const Node& rhs) const {
   assert(this->state);
@@ -57,7 +66,8 @@ bool Node::move_blank_up(Node& n) {
   if (pos < 3)
     return false;
 
-  swap(this->state[pos], this->state[pos-3]);
+  n.set_state(this->state);
+  swap(n.state[pos], n.state[pos-3]);
   n.cost = this->cost + 1;
   n.parent = this;
   return true;
@@ -75,7 +85,8 @@ bool Node::move_blank_right(Node& n) {
   if (pos % 3 == 2)
     return false;
 
-  swap(this->state[pos], this->state[pos+1]);
+  n.set_state(this->state);
+  swap(n.state[pos], n.state[pos+1]);
   n.cost = this->cost + 1;
   n.parent = this;
   return true;
@@ -93,7 +104,8 @@ bool Node::move_blank_down(Node& n) {
   if (pos > 5)
     return false;
 
-  swap(this->state[pos], this->state[pos+3]);
+  n.set_state(this->state);
+  swap(n.state[pos], n.state[pos+3]);
   n.cost = this->cost + 1;
   n.parent = this;
   return true;
@@ -111,8 +123,21 @@ bool Node::move_blank_left(Node& n) {
   if (pos % 3 == 0)
     return false;
 
-  swap(this->state[pos], this->state[pos-1]);
+  n.set_state(this->state);
+  swap(n.state[pos], n.state[pos-1]);
   n.cost = this->cost + 1;
   n.parent = this;
   return true;
+}
+
+void Node::print() {
+  cout << "Node cost: " << this->cost << "\n";
+  cout << "Node State:\n";
+  for (short i = 0; i < 9; ++i) {
+    cout << this->state[i] << ' ';
+    if (i % 3 == 2) {
+      cout << '\n';
+    }
+  }
+  cout << flush;
 }

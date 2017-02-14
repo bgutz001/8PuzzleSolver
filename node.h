@@ -13,11 +13,14 @@ class Node {
   void set_state(short* s);
   short* get_state();
   bool operator<(const Node& rhs) const;
+  bool operator>(const Node& rhs) const;
   bool operator==(const Node& rhs) const;
 
   bool move_blank_up(Node& n);
   bool move_blank_right(Node& n);
   bool move_blank_down(Node& n);
   bool move_blank_left(Node& n);
+
+  void print();
   
 };
