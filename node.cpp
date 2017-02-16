@@ -6,8 +6,8 @@
 using namespace std;
 
 Node::Node() {
-  parent = 0;
   cost = 0;
+  distanceToGoal = 0;
   key = 0;
 }
 
@@ -16,12 +16,12 @@ Node::Node(const Node& n) {
   for (short i = 0; i < 9; ++i) {
     state[i] = n.state[i];
   }
-  parent = n.parent;
   key = n.key;
+  distanceToGoal = n.distanceToGoal;
+
 }
 
 Node::~Node() {
-
 }
 
 void Node::set_cost(int c) {
@@ -32,7 +32,15 @@ int Node::get_cost() {
   return cost;
 }
 
-void Node::set_state(short* s) {
+void Node::set_distanceToGoal(int d) {
+  distanceToGoal = d;
+}
+
+int Node::get_distanceToGoal() {
+  return distanceToGoal;
+}
+
+void Node::set_state(const short* s) {
   assert(s);
   for (short i = 0; i < 9; ++i) {
     state[i] = s[i];
@@ -57,14 +65,14 @@ unsigned long Node::get_key() {
 }
 
 bool Node::operator<(const Node& rhs) const {
-  if (this->cost < rhs.cost) {
+  if (this->cost + this->distanceToGoal < rhs.cost + rhs.distanceToGoal) {
     return true;
   }
   return false;
 }
 
 bool Node::operator>(const Node& rhs) const {
-  if (this->cost > rhs.cost) {
+  if (this->cost + this->distanceToGoal > rhs.cost + rhs.distanceToGoal) {
     return true;
   }
   return false;
@@ -100,11 +108,11 @@ bool Node::move_blank_up(Node& n) {
   if (pos < 3)
     return false;
 
-  n.set_state(this->state);
+  n = *this;
   swap(n.state[pos], n.state[pos-3]);
-  n.cost = this->cost + 1;
+  ++n.cost;
   n.updateKey();
-
+  
   return true;
 }
   
@@ -120,9 +128,9 @@ bool Node::move_blank_right(Node& n) {
   if (pos % 3 == 2)
     return false;
 
-  n.set_state(this->state);
+  n = *this;
   swap(n.state[pos], n.state[pos+1]);
-  n.cost = this->cost + 1;
+  ++n.cost;
   n.updateKey();
   
   return true;
@@ -140,9 +148,9 @@ bool Node::move_blank_down(Node& n) {
   if (pos > 5)
     return false;
 
-  n.set_state(this->state);
+  n = *this;
   swap(n.state[pos], n.state[pos+3]);
-  n.cost = this->cost + 1;
+  ++n.cost;
   n.updateKey();
 
   return true;
@@ -160,16 +168,16 @@ bool Node::move_blank_left(Node& n) {
   if (pos % 3 == 0)
     return false;
 
-  n.set_state(this->state);
+  n = *this;
   swap(n.state[pos], n.state[pos-1]);
-  n.cost = this->cost + 1;
+  ++n.cost;
   n.updateKey();
-
+  
   return true;
 }
 
 void Node::print() {
-  cout << "Node cost: " << this->cost << "\n";
+  cout << "Node g(n): " << this->cost << " Node h(n): " << this->distanceToGoal << "\n";
   cout << "Node State:\n";
   for (short i = 0; i < 9; ++i) {
     cout << this->state[i] << ' ';
